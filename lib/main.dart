@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 import 'quizBrain.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 
-void main() => runApp(Quizzler());
+//void main() => runApp(Quizzler());
+
+void main() {
+
+  if (Platform.isAndroid) {
+  print('Running on Android device');
+ // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual);
+ //TODO trying to get nav bar in android to hide, but this doesn't work here
+   }
+  runApp(Quizzler());
+}
 
 class Quizzler extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade900,
-        body: SafeArea(
-          child: Padding(
+      home: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.grey.shade900,
+          body: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.0),
             child: QuizPage(),
           ),
@@ -28,18 +42,36 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+  int numCorrect = 0;
+  int numWrong = 0;
   QuizBrain quizBrain = QuizBrain();
   //Object type=QuizBrain. this instance is called quizBrain. an instance of QuizBrain()
+
+  IconData currentIcon = Icons.star; // Initial icon
+  Color currentIconColor = Colors.yellow;
 
   void checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getQuestionAnswer();
     if (userPickedAnswer == correctAnswer) {
-      scoreKeeper.add(Icon(Icons.check, color: Colors.green));
+      numCorrect++;
+      if (numCorrect == 5) {
+        Alert(
+          context: context,
+          title: "Quizzler",
+          desc: "You're doing great! Carry on!",
+        ).show();
+      }
       print('you got it right');
+      currentIcon = Icons.check;
+      currentIconColor = Colors.green;
     } else {
-      scoreKeeper.add(Icon(Icons.close, color: Colors.red));
       print('You got it wrong');
+      currentIcon = Icons.close;
+      currentIconColor = Colors.red;
+      numWrong++;
     }
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    //TODO this seems to work once there has been a screen interaction
     setState(() {
       quizBrain.nextQuestion();
     });
@@ -52,9 +84,9 @@ class _QuizPageState extends State<QuizPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Expanded(
-          flex: 5,
+          flex: 3,
           child: Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: EdgeInsets.all(5.0),
             child: Center(
               child: Text(
                 quizBrain.getQuestionText(),
@@ -68,6 +100,28 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
         ),
+        Center(
+          child: Icon(currentIcon,
+              color: currentIconColor,
+              size: 200),
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(
+            numCorrect.toString(),
+            style: TextStyle(
+              color: Colors.green,
+              fontSize: 40.0,
+            ),
+          ),
+          SizedBox(width: 100),
+          Text(
+            numWrong.toString(),
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 40.0,
+            ),
+          ),
+        ]),
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(15.0),
@@ -82,7 +136,6 @@ class _QuizPageState extends State<QuizPage> {
                 ),
                 onPressed: () {
                   checkAnswer(true);
-
                 }),
           ),
         ),
@@ -105,7 +158,7 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
         ),
-        Row(children: scoreKeeper),
+        //      Row(children: scoreKeeper),
       ],
     );
   }

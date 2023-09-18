@@ -3,8 +3,7 @@ import 'dart:math';
 
 
 class QuizBrain {
-  int _qNum = 0;
-  List<Questions> _questionBank = [
+  static List<Questions> _questionBank = [
     Questions(q: 'The currency of Japan is the yen.', a: true),
     Questions(q: 'The Eiffel Tower is located in Berlin.', a: false),
     Questions(q: 'The human brain weighs approximately 5 pounds.', a: false),
@@ -151,6 +150,7 @@ class QuizBrain {
     Questions(q: 'The unit of electrical resistance is the ohm.', a: true),
     Questions(q: 'The theory of relativity was developed by Sir Isaac Newton.', a: false),
       ];
+  int _qNum = Random().nextInt(_questionBank.length);
 
  String getQuestionText() {
    return _questionBank[_qNum].questionText;
@@ -161,12 +161,8 @@ class QuizBrain {
   }
 
   void nextQuestion() {
-//  if (_qNum < _questionBank.length-1){
-//     _qNum++;
-//     print('_qNum=$_qNum');
-//        }
    _qNum = Random().nextInt(_questionBank.length);
-  }
+   }
 
 }
 //Learning: Underscore makes object private to this class
