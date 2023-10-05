@@ -11,7 +11,7 @@ void main() {
 
   if (Platform.isAndroid) {
   print('Running on Android device');
- // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual);
+ // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
  //TODO trying to get nav bar in android to hide, but this doesn't work here
    }
   runApp(Quizzler());
